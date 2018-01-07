@@ -9,7 +9,6 @@ import Data.ByteString.Lazy (ByteString)
 import Data.ByteString.Lazy.Char8 (putStr)
 import Data.Char (ord)
 import Data.Csv (ToRecord(..), EncodeOptions(..), encodeWith, defaultEncodeOptions, toField, record)
-import Data.Functor.Infix ((<$$>))
 import Data.Maybe (fromMaybe, catMaybes)
 import Data.Monoid ((<>))
 import System.Environment (getArgs)
@@ -17,6 +16,8 @@ import System.Exit (exitSuccess, exitFailure)
 import System.IO (hPutStr, stderr)
 import Text.Kindle.Clippings (Clipping(..), Document(..), Content(..), readClippings)
 import Text.Parsec (parse)
+
+(<$$>) = fmap . fmap
 
 data Card = Card { question :: String, answer :: String }
 

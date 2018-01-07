@@ -4,18 +4,17 @@ module Text.Kindle.Clippings.Reader
 ) where
 
 import Control.Applicative ((<$>), (<*>), (*>), (<*), (<|>), liftA2)
-import Control.Monad (join)
-import Data.Functor.Infix ((<$$>))
-import Data.List (find)
-import Data.Maybe (isJust, fromMaybe)
 import Data.Time.LocalTime (LocalTime)
-import Data.Time.Parse (strptime)
+import Data.Time.Format
+import Data.Functor.Identity
 import Text.Kindle.Clippings.Types (Clipping(..),Interval(..),Document(..),Position(..),Content(..))
 import Text.Parsec (many1, digit, string, oneOf, try, char, manyTill, anyToken, lookAhead, many, noneOf, between)
 import Text.Parsec.String (Parser)
 import Text.Parsec.Combinator.Extras (optional, but, tryString, stringCI)
 
 data Tree = Leaf String | Node [Tree]
+
+(<$$>) = fmap . fmap
 
 brackets :: Parser Tree
 brackets = Node <$> between
@@ -76,13 +75,7 @@ readLocation = (tryString "Loc. " <|> stringCI "Location ")
             <* many1 (oneOf " |")
 
 parseDate :: String -> LocalTime
-parseDate raw = fromMaybe defaultLocalTime . join . find isJust . map (fst <$$> flip strptime raw) $
-  [ "%A, %d %B %y %X"  -- Thursday, 01 January 70 12:00:00 AM
-  , "%A, %B %d, %Y %r" -- Thursday, January 01, 1970 12:00:00 AM
-  ]
-
-defaultLocalTime :: LocalTime
-Just (defaultLocalTime, _) = strptime "" ""
+parseDate = runIdentity .  parseTimeM True defaultTimeLocale "%A, %-d %B %Y %X"
 
 readDate :: Parser LocalTime
 readDate = string "Added on " *> (parseDate <$> but "\n\r")

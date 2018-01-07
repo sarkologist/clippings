@@ -3,9 +3,8 @@ module Text.Kindle.Clippings.Writer
 , showClippings
 ) where
 
-import Data.Time.Format (formatTime)
+import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.Time.LocalTime (LocalTime)
-import System.Locale (defaultTimeLocale)
 import Text.Kindle.Clippings.Types (Clipping(..), Document(..), Position(..), Content(..), Interval(..))
 
 instance Show Document where
